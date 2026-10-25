@@ -34,6 +34,10 @@
         <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/></svg>
         <span>Text Us</span>
       </a>
+      <button class="btn btn--email" type="button" data-open-email>
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z"/></svg>
+        <span>Email Us</span>
+      </button>
     </div>
   </div>
 </header>
@@ -191,7 +195,79 @@
 <nav class="mobilebar" aria-label="Contact">
   <a class="mobilebar__call" href="tel:+14259549698">Call</a>
   <a class="mobilebar__text" href="sms:+14259549698">Text</a>
+  <button class="mobilebar__email" type="button" data-open-email>Email</button>
 </nav>
+
+<dialog id="email-dialog" class="emailbox" aria-labelledby="email-title">
+  <form class="emailbox__form" action="https://api.web3forms.com/submit" method="POST">
+    <button class="emailbox__close" type="button" data-close-email aria-label="Close">&times;</button>
+    <h2 id="email-title">Email us</h2>
+    <p class="emailbox__intro">Send us a message and we'll get back to you.</p>
+
+    <input type="hidden" name="access_key" value="57ec1c88-fb7a-4a19-ac3c-71fcc81dd878">
+    <input type="hidden" name="subject" value="New message from thegreatwashllc.com">
+    <input type="hidden" name="from_name" value="The Great Wash LLC website">
+    <input type="checkbox" name="botcheck" class="emailbox__hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+    <label>Name
+      <input type="text" name="name" required autocomplete="name">
+    </label>
+    <label>Your email
+      <input type="email" name="email" required autocomplete="email">
+    </label>
+    <label><span>Phone <span class="emailbox__opt">(optional)</span></span>
+      <input type="tel" name="phone" autocomplete="tel">
+    </label>
+    <label>Message
+      <textarea name="message" rows="4" required placeholder="What would you like cleaned, and where?"></textarea>
+    </label>
+
+    <button class="btn btn--call emailbox__send" type="submit">Send message</button>
+    <p class="emailbox__status" role="status" aria-live="polite"></p>
+  </form>
+</dialog>
+
+<script>
+  (() => {
+    const dlg = document.getElementById('email-dialog');
+    const form = dlg.querySelector('form');
+    const status = dlg.querySelector('.emailbox__status');
+    const send = dlg.querySelector('.emailbox__send');
+
+    document.querySelectorAll('[data-open-email]').forEach((b) => b.addEventListener('click', () => {
+      status.textContent = '';
+      status.className = 'emailbox__status';
+      dlg.showModal();
+    }));
+    dlg.querySelector('[data-close-email]').addEventListener('click', () => dlg.close());
+    // Click on the dimmed backdrop closes the window.
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      send.disabled = true;
+      send.textContent = 'Sending…';
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+        form.reset();
+        status.textContent = 'Thanks! Your message was sent.';
+        status.className = 'emailbox__status is-ok';
+      } catch {
+        status.innerHTML = 'Sorry, that didn\'t go through. Please call <a href="tel:+14259549698">(425) 954-9698</a> or email <a href="mailto:raymondfree@thegreatwashllc.com">raymondfree@thegreatwashllc.com</a>.';
+        status.className = 'emailbox__status is-err';
+      } finally {
+        send.disabled = false;
+        send.textContent = 'Send message';
+      }
+    });
+  })();
+</script>
 
 </body>
 </html>
