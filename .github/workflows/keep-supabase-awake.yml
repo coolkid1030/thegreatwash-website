@@ -1,0 +1,37 @@
+name: Keep Supabase awake
+
+on:
+  schedule:
+    - cron: '17 15 */3 * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ping sign-quote function
+        run: |
+          curl -fsS -X POST "https://mkwopmwhbkblmxhnylcw.supabase.co/functions/v1/sign-quote" \
+            -H 'Content-Type: application/json' \
+            -d '{"action":"ping"}'
+
+      - name: Keep scheduled ping enabled
+        run: |
+          last=$(git log -1 --format=%ct)
+          now=$(date -u +%s)
+          age_days=$(( (now - last) / 86400 ))
+          echo "Newest commit is ${age_days} days old"
+          if [ "$age_days" -gt 45 ]; then
+            date -u +%F >> .github/heartbeat.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+            git add .github/heartbeat.txt
+            git commit -m "chore: keep scheduled ping enabled"
+            git push
+          fi
