@@ -17,11 +17,12 @@ jobs:
 
       - name: Ping sign-quote function
         run: |
-          curl -fsS -X POST "https://mkwopmwhbkblmxhnylcw.supabase.co/functions/v1/sign-quote" \
+          curl -fsS --max-time 60 --retry 2 -X POST "https://mkwopmwhbkblmxhnylcw.supabase.co/functions/v1/sign-quote" \
             -H 'Content-Type: application/json' \
             -d '{"action":"ping"}'
 
       - name: Keep scheduled ping enabled
+        if: always()
         run: |
           last=$(git log -1 --format=%ct)
           now=$(date -u +%s)

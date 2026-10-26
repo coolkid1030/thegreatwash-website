@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { FUNCTION_URL, readToken, createApi, canSubmit, firstName, confirmationText, formatSignedDate } from '../sign/sign-core.js';
+import { FUNCTION_URL, readToken, createApi, canSubmit, firstName, confirmationText, formatSignedDate } from '../sign-assets/sign-core.js';
 
 const res = (status, body) => ({ status, ok: status >= 200 && status < 300, json: async () => body });
 const htmlRes = (status) => ({ status, ok: status < 300, json: async () => { throw new SyntaxError('not json'); } });
