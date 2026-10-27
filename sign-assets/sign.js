@@ -1,4 +1,4 @@
-import { readToken, createApi, canSubmit, confirmationText, formatSignedDate } from './sign-core.js';
+import { readToken, createApi, canSubmit, confirmationText, formatSignedDate, formatToday } from './sign-core.js';
 
 const app = document.getElementById('app');
 const token = readToken(location.search);
@@ -196,6 +196,7 @@ function showReady(view) {
       el('div', { class: 'field' },
         el('div', { class: 'padhead' }, el('span', { class: 'label', text: 'Signature' }), clear),
         pad.canvas),
+      el('p', { class: 'note', text: 'Date: ' + formatToday(new Date()) }),
       el('label', { class: 'consent', for: 'agree' }, agree, el('span', { text: 'I agree to the terms above and to sign electronically.' })),
       err,
       submit),

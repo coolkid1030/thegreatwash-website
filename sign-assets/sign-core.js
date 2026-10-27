@@ -84,3 +84,10 @@ export function formatSignedDate(iso) {
   if (Number.isNaN(d.getTime())) return '';
   return new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: 'long', day: 'numeric' }).format(d);
 }
+
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+// "October 26, 2026" from the local date parts of `date`.
+export function formatToday(date) {
+  return `${MONTH_NAMES[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { FUNCTION_URL, readToken, createApi, canSubmit, firstName, confirmationText, formatSignedDate } from '../sign-assets/sign-core.js';
+import { FUNCTION_URL, readToken, createApi, canSubmit, firstName, confirmationText, formatSignedDate, formatToday } from '../sign-assets/sign-core.js';
 
 const res = (status, body) => ({ status, ok: status >= 200 && status < 300, json: async () => body });
 const htmlRes = (status) => ({ status, ok: status < 300, json: async () => { throw new SyntaxError('not json'); } });
@@ -91,4 +91,9 @@ test('formatSignedDate', () => {
   assert.equal(formatSignedDate('2026-10-30T22:42:00Z'), 'October 30, 2026');
   assert.equal(formatSignedDate('2026-11-01T03:00:00Z'), 'October 31, 2026');
   assert.equal(formatSignedDate('garbage'), '');
+});
+
+test('formatToday uses local date parts', () => {
+  assert.equal(formatToday(new Date(2026, 9, 26)), 'October 26, 2026');
+  assert.equal(formatToday(new Date(2027, 0, 5)), 'January 5, 2027');
 });
